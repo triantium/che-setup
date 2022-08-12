@@ -4,6 +4,7 @@ kind: Simple # internally, we also have a Cluster config, which is not yet avail
 name: local # name that you want to give to your cluster (will still be prefixed with `k3d-`)
 kubeAPI: # same as `--api-port myhost.my.domain:6445` (where the name would resolve to 127.0.0.1)
   host: "kubernetes.triantium.de" # important for the `server` setting in the kubeconfig
+server: 1
 agents: 2
 # Docker Portforwards
 ports:
@@ -19,21 +20,21 @@ ports:
   - port: 9080:9080 # same as `--port '8080:80@loadbalancer'`
     nodeFilters:
       - loadbalancer
-#options:
-#  k3s:
-#    extraArgs:
-#      - arg: --oidc-issuer-url=https://dex.example.com:32000
+options:
+  k3s:
+    extraArgs:
+      - arg: --kube-apiserver-arg=oidc-issuer-url=https://kubernetes.triantium.de:30080
+        nodeFilters:
+          - server:*
+      - arg: --kube-apiserver-arg=oidc-client-id=example-app
+        nodeFilters:
+          - server:*
+#      - arg: --kube-apiserver-arg=oidc-ca-file=/etc/ssl/certs/openid-ca.pem
 #        nodeFilters:
 #          - server:*
-#      - arg: --oidc-client-id=example-app
-#        nodeFilters:
-#          - server:*
-#      - arg: --oidc-ca-file=/etc/ssl/certs/openid-ca.pem
-#        nodeFilters:
-#          - server:*
-#      - arg: --oidc-username-claim=email
-#        nodeFilters:
-#          - server:*
-#      - arg: --oidc-groups-claim=groups
-#        nodeFilters:
-#          - server:*
+      - arg: --kube-apiserver-arg=oidc-username-claim=email
+        nodeFilters:
+          - server:*
+      - arg: --kube-apiserver-arg=oidc-groups-claim=groups
+        nodeFilters:
+          - server:*
